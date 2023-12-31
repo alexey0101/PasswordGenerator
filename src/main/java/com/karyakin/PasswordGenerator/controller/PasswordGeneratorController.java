@@ -31,7 +31,7 @@ public class PasswordGeneratorController {
         }
     }
 
-    @Profile("!dev")
+    @Profile("master")
     @RequiredArgsConstructor
     static class DefaultController {
         private final RandomPasswordGenerator randomPasswordGenerator;
