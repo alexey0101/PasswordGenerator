@@ -15,25 +15,34 @@ public class PasswordGeneratorController {
 
     private final RandomPasswordGenerator randomPasswordGenerator;
 
-    @GetMapping("/api/v1/password/generate")
-    @Profile("master")
-    public ResponseEntity<?> generatePassword(@RequestParam(required = false, defaultValue = "5") int lower, @RequestParam(required = false, defaultValue = "5") int upper,
-                                              @RequestParam(required = false, defaultValue = "3") int digit, @RequestParam(required = false, defaultValue = "3") int special) {
-        try {
-            return ResponseEntity.ok(new PasswordResponse(randomPasswordGenerator.generate(lower, upper, digit, special)));
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    @RestController
+    @Profile("dev")
+    @RequiredArgsConstructor
+    static class DevController {
+        private final RandomPasswordGenerator randomPasswordGenerator;
+        @GetMapping("/dev/api/v1/password/generate")
+        public ResponseEntity<?> generateDevPassword(@RequestParam(required = false, defaultValue = "5") int lower, @RequestParam(required = false, defaultValue = "5") int upper,
+                                                     @RequestParam(required = false, defaultValue = "3") int digit, @RequestParam(required = false, defaultValue = "3") int special) {
+            try {
+                return ResponseEntity.ok(new PasswordResponse(randomPasswordGenerator.generate(lower, upper, digit, special)));
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            }
         }
     }
 
-    @GetMapping("/dev/api/v1/password/generate")
-    @Profile("dev")
-    public ResponseEntity<?> generateDevPassword(@RequestParam(required = false, defaultValue = "5") int lower, @RequestParam(required = false, defaultValue = "5") int upper,
-                                              @RequestParam(required = false, defaultValue = "3") int digit, @RequestParam(required = false, defaultValue = "3") int special) {
-        try {
-            return ResponseEntity.ok(new PasswordResponse(randomPasswordGenerator.generate(lower, upper, digit, special)));
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    @Profile("!dev")
+    @RequiredArgsConstructor
+    static class DefaultController {
+        private final RandomPasswordGenerator randomPasswordGenerator;
+        @GetMapping("/api/v1/password/generate")
+        public ResponseEntity<?> generatePassword(@RequestParam(required = false, defaultValue = "5") int lower, @RequestParam(required = false, defaultValue = "5") int upper,
+                                                     @RequestParam(required = false, defaultValue = "3") int digit, @RequestParam(required = false, defaultValue = "3") int special) {
+            try {
+                return ResponseEntity.ok(new PasswordResponse(randomPasswordGenerator.generate(lower, upper, digit, special)));
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            }
         }
     }
 }
