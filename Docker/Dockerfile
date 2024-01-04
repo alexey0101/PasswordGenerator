@@ -1,7 +1,7 @@
 # Step 1: Clone the repository
 FROM alpine/git as clone
 ARG url
-RUN git clone ${url} /app
+RUN git clone -b "dev" ${url} /app
 
 # Step 2: Build the application using Maven
 FROM maven:3.8.3-openjdk-17 AS build
